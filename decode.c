@@ -13,13 +13,17 @@
 /* Buffer to hold decoded string */
 char g_buf[100];
 
-char *decode_string(unsigned int mask, int len, void *mixer, void *string)
+char *decode_string(unsigned int mask, unsigned int len, void *mixer, void *string)
 {
+	if ((mixer == NULL) || (string == NULL))
+		return(NULL);
+
 	/* Organise into rows of 2 columns. Each bit of bitmask selects the column. */
 	int  (*m)[2] = (int  (*)[2])mixer;
 	char (*s)[2] = (char (*)[2])string; 
 
-	int decLen = len/2; /* decoded string len is half encoded string len */
+	/* Length of the decoded string is half of the encoded string */
+	int decLen = len/2; 
 
 	if (decLen > sizeof(g_buf))
 		return(NULL);
@@ -29,6 +33,7 @@ char *decode_string(unsigned int mask, int len, void *mixer, void *string)
 	int i = 0;
 	int j = 0;
 
+	/* Decode... */
 	for(i=0; i<decLen; i++) 
 	{
 		g_buf[i] = s[j][mask & 1];
@@ -38,7 +43,8 @@ char *decode_string(unsigned int mask, int len, void *mixer, void *string)
 		mask >>= 1;
 	}
 
-	g_buf[decLen] = '\0'; /* terminate the ASCII string */
+	/* Terminate the ASCII string */
+	g_buf[decLen] = '\0'; 
 		
 	return(g_buf);
 }
